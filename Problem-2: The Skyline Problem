@@ -1,0 +1,39 @@
+#include <vector>
+#include <set>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {
+        vector<pair<int, int>> events;
+        for (auto& b : buildings) {
+            events.emplace_back(b[0], -b[2]); // Building start
+            events.emplace_back(b[1], b[2]);  // Building end
+        }
+        
+        sort(events.begin(), events.end());
+        
+        multiset<int> heights = {0};
+        vector<vector<int>> result;
+        int prevHeight = 0;
+        
+        for (auto& [x, h] : events) {
+            if (h < 0) {
+                heights.insert(-h);
+            } else {
+                heights.erase(heights.find(h));
+            }
+            
+            int currentHeight = *heights.rbegin();
+            if (currentHeight != prevHeight) {
+                result.push_back({x, currentHeight});
+                prevHeight = currentHeight;
+            }
+        }
+        
+        return result;
+    }
+};
